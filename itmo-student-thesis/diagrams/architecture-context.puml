@@ -1,0 +1,62 @@
+@startuml architecture-context
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 70
+
+left to right direction
+
+skinparam rectangle {
+    BackgroundColor #F5F5F5
+    BorderColor #AAAAAA
+    RoundCorner 6
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #AAAAAA
+    RoundCorner 4
+    FontSize 12
+}
+
+skinparam database {
+    BackgroundColor #DDEEFF
+    BorderColor #5588BB
+}
+
+skinparam actor {
+    BackgroundColor #FFFFFF
+    BorderColor #888888
+}
+
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor #CCCC00
+}
+
+actor "Клиентское приложение" as client
+
+rectangle "retry-proxy" as proxy
+
+rectangle "Keycloak" as keycloak {
+    rectangle "keycloak-ydb-extension" as ext {
+        component "hibernate-dialect-v7" as dialect
+        component "YdbConnectionProviderFactory" as connectionProvider
+        component "YdbRealmProvider" as realmProvider
+        component "YdbLiquibaseConnectionProvider" as liquibase
+    }
+}
+
+database "YDB" as ydb
+
+client --> proxy : HTTP
+proxy --> keycloak : HTTP
+keycloak --> ydb : JDBC
+
+note bottom of proxy
+  Повторный запрос при HTTP 503
+  (YdbRetryableException)
+end note
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml retry-sequence
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+skinparam participant {
+    BackgroundColor #F5F5F5
+    BorderColor #AAAAAA
+}
+
+skinparam sequence {
+    ArrowColor #555555
+    LifeLineBorderColor #AAAAAA
+    GroupBackgroundColor #FFF9E6
+    GroupBorderColor #CCAA00
+}
+
+participant "Клиент" as client
+participant "retry-proxy" as proxy
+participant "Keycloak" as keycloak
+participant "YDB" as ydb
+
+client -> proxy : HTTP запрос
+
+group Попытка 1
+    proxy -> keycloak : HTTP запрос
+    keycloak -> ydb : BEGIN TRANSACTION\n+ SQL-запросы
+    ydb --> keycloak : OVERLOADED\n(перегрузка сервера)
+    keycloak --> proxy : HTTP 503\n{"error": "ydb_retryable"}
+end
+
+note over proxy : ожидание (экспоненциальный backoff)
+
+group Попытка 2
+    proxy -> keycloak : HTTP запрос (повтор)
+    keycloak -> ydb : BEGIN TRANSACTION\n+ SQL-запросы
+    ydb --> keycloak : ABORTED\n(TRANSACTION_LOCKS_INVALIDATED)
+    keycloak --> proxy : HTTP 503\n{"error": "ydb_retryable"}
+end
+
+note over proxy : ожидание (экспоненциальный backoff)
+
+group Попытка 3
+    proxy -> keycloak : HTTP запрос (повтор)
+    keycloak -> ydb : BEGIN TRANSACTION\n+ SQL-запросы
+    ydb --> keycloak : SUCCESS
+    keycloak --> proxy : HTTP 200
+end
+
+proxy --> client : HTTP 200
+
+@enduml
