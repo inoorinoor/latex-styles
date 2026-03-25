@@ -1,0 +1,16 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(client, "Клиентское приложение")
+
+System_Boundary(system, "Auth System") {
+    Container(proxy, "Retry Proxy", "HTTP Reverse Proxy", "Повторяет запросы при сбоях YDB")
+    Container(keycloak, "Keycloak", "Java", "IAM provider")
+    ContainerDb(ydb, "YDB", "DB", "Хранение данных keycloak")
+}
+
+Rel_R(client, proxy, "HTTP")
+Rel_R(proxy, keycloak, "HTTP")
+Rel_R(keycloak, ydb, "Uses via extension (Hibernate dialect)")
+
+@enduml

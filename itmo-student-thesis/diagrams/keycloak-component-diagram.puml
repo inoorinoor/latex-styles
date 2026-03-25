@@ -1,0 +1,15 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container(keycloak, "Keycloak", "Java", "IAM server") {
+    Component(extension, "keycloak-ydb-extension", "SPI Provider", "YDB integration logic")
+}
+
+ContainerDb(ydb, "YDB", "Database", "Distributed DB")
+
+Component_Ext(hibernate, "hibernate-dialect-v7", "Library", "YDB dialect for Hibernate")
+
+Rel(extension, hibernate, " ")
+Rel(keycloak, ydb, " ")
+
+@enduml
