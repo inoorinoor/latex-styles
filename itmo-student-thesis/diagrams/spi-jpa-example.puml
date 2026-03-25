@@ -1,0 +1,43 @@
+@startuml spi-jpa-example
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+skinparam classFontSize 13
+skinparam arrowFontSize 11
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+hide empty members
+
+interface Spi {
+    + getName() : String
+    + getProviderClass() : Class
+    + getProviderFactoryClass() : Class
+}
+
+interface "ProviderFactory<T>" as ProviderFactory {
+    + create(session) : T
+    + init(config) : void
+    + postInit(factory) : void
+    + getId() : String
+    + order() : int
+}
+
+interface Provider {
+    + close() : void
+}
+
+class JpaConnectionSpi implements Spi {
+}
+
+interface JpaConnectionProviderFactory extends ProviderFactory {
+}
+
+interface JpaConnectionProvider extends Provider {
+    + getEntityManager() : EntityManager
+}
+
+JpaConnectionSpi ..> JpaConnectionProviderFactory
+JpaConnectionSpi ..> JpaConnectionProvider
+JpaConnectionProviderFactory ..> JpaConnectionProvider : create() >
+
+@enduml

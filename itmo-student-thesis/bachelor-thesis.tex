@@ -21,6 +21,8 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows}
 \usepackage{filecontents}
+\usepackage{graphicx}
+\usepackage{float}
 %% Конец
 
 %% Указываем файл с библиографией.
@@ -198,6 +200,13 @@ HTTP-запроса или транзакции. В нём необходимо 
 Таким образом, жизненный цикл провайдера привязан к сессии: фабрика создаёт новый экземпляр
 через \texttt{ProviderFactory.create(session)} в начале каждой сессии, а Keycloak вызывает
 \texttt{close()} при её завершении.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/spi-jpa-example-diagram.png}
+    \caption{Пример реализации SPI: JPA-подключение в Keycloak}
+    \label{fig:spi-jpa-example}
+\end{figure}
 
 Реальная бизнес-логика реализуется не в самом интерфейсе \texttt{Provider}, а в дочерних интерфейсах и
 их конкретных реализациях. Например, \texttt{JpaRealmProvider} реализует сразу несколько интерфейсов ---
