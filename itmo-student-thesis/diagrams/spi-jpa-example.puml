@@ -9,17 +9,17 @@ skinparam ranksep 60
 hide empty members
 
 interface Spi {
-    + getName() : String
-    + getProviderClass() : Class
-    + getProviderFactoryClass() : Class
+    getName() : String
+    getProviderClass() : Class
+    getProviderFactoryClass() : Class
 }
 
 interface "ProviderFactory<T>" as ProviderFactory {
-    + create(session) : T
-    + init(config) : void
-    + postInit(factory) : void
-    + getId() : String
-    + order() : int
+    create(session) : T
+    init(config) : void
+    postInit(factory) : void
+    getId() : String
+    order() : int
 }
 
 interface Provider {
@@ -33,7 +33,7 @@ interface JpaConnectionProviderFactory extends ProviderFactory {
 }
 
 interface JpaConnectionProvider extends Provider {
-    + getEntityManager() : EntityManager
+    getEntityManager() : EntityManager
 }
 
 JpaConnectionSpi ..> JpaConnectionProviderFactory
