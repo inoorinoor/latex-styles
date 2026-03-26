@@ -23,7 +23,7 @@ interface "ProviderFactory<T>" as ProviderFactory {
 }
 
 interface Provider {
-    + close() : void
+    close() : void
 }
 
 class JpaConnectionSpi implements Spi {

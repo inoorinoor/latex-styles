@@ -11,6 +11,6 @@ System_Boundary(system, "Auth System") {
 
 Rel_R(client, proxy, "HTTP")
 Rel_R(proxy, keycloak, "HTTP")
-Rel_R(keycloak, ydb, "JDBC")
+Rel_D(keycloak, ydb, "JDBC")
 
 @enduml
